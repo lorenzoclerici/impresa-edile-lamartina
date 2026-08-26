@@ -1781,6 +1781,22 @@ body {
   display: block;
 }
 
+.form-error {
+  display: none;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  background: rgba(200, 60, 60, 0.08);
+  border: 1px solid rgba(180, 50, 50, 0.35);
+  border-radius: var(--radius-btn);
+  text-align: center;
+  color: #7a1f1f;
+  font-weight: 500;
+}
+
+.form-error.is-visible {
+  display: block;
+}
+
 /* ==========================================================================
    Footer
    ========================================================================== */

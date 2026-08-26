@@ -133,10 +133,15 @@
     window.addEventListener("hashchange", initFromHash);
   }
 
-  /* Contact form */
+  /* Contact form → Google Sheet (via Apps Script)
+   * Dopo la distribuzione Apps Script, incolla qui l’URL /exec */
+  const CONTACT_FORM_ENDPOINT =
+    "https://script.google.com/macros/s/AKfycbzo09fvKU_s7aKQrAycUkCmB0F4d6ABSJeWXsgFgxNnLyDHARf4tLXc_Oa6mjdKtiUz/exec";
+
   function initContactForm() {
     const form = document.getElementById("contact-form");
     const successEl = document.getElementById("form-success");
+    const errorEl = document.getElementById("form-error");
     if (!form) return;
 
     form.addEventListener("submit", async (e) => {
@@ -144,6 +149,10 @@
 
       const submitBtn = form.querySelector(".btn-submit");
       const privacyCheckbox = form.querySelector("#privacy");
+      const serviceSelect = form.querySelector("#service");
+
+      successEl?.classList.remove("is-visible");
+      errorEl?.classList.remove("is-visible");
 
       if (!privacyCheckbox?.checked) {
         privacyCheckbox?.focus();
@@ -155,22 +164,56 @@
         return;
       }
 
+      if (!CONTACT_FORM_ENDPOINT) {
+        errorEl?.classList.add("is-visible");
+        errorEl?.setAttribute("tabindex", "-1");
+        errorEl?.focus();
+        return;
+      }
+
+      const serviceLabel =
+        serviceSelect?.selectedOptions?.[0]?.text?.trim() ||
+        serviceSelect?.value ||
+        "";
+
+      const payload = new URLSearchParams({
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        company: form.company.value.trim(),
+        service: serviceLabel,
+        message: form.message.value.trim(),
+      });
+
       submitBtn.classList.add("is-loading");
       submitBtn.disabled = true;
 
-      /* Simula invio — sostituire con endpoint backend reale */
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      try {
+        await fetch(CONTACT_FORM_ENDPOINT, {
+          method: "POST",
+          body: payload,
+          redirect: "follow",
+        });
 
-      submitBtn.classList.remove("is-loading");
-      submitBtn.disabled = false;
-      form.reset();
-      successEl?.classList.add("is-visible");
-      successEl?.setAttribute("tabindex", "-1");
-      successEl?.focus();
+        form.reset();
+        if (serviceSelect) {
+          serviceSelect.value = "ristrutturazione";
+        }
+        successEl?.classList.add("is-visible");
+        successEl?.setAttribute("tabindex", "-1");
+        successEl?.focus();
 
-      setTimeout(() => {
-        successEl?.classList.remove("is-visible");
-      }, 6000);
+        setTimeout(() => {
+          successEl?.classList.remove("is-visible");
+        }, 6000);
+      } catch (err) {
+        errorEl?.classList.add("is-visible");
+        errorEl?.setAttribute("tabindex", "-1");
+        errorEl?.focus();
+      } finally {
+        submitBtn.classList.remove("is-loading");
+        submitBtn.disabled = false;
+      }
     });
   }
 
