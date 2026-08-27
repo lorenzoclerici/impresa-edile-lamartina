@@ -199,13 +199,8 @@
         if (serviceSelect) {
           serviceSelect.value = "ristrutturazione";
         }
-        successEl?.classList.add("is-visible");
-        successEl?.setAttribute("tabindex", "-1");
-        successEl?.focus();
-
-        setTimeout(() => {
-          successEl?.classList.remove("is-visible");
-        }, 6000);
+        window.location.href = "thank-you.html";
+        return;
       } catch (err) {
         errorEl?.classList.add("is-visible");
         errorEl?.setAttribute("tabindex", "-1");
