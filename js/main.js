@@ -199,7 +199,7 @@
         if (serviceSelect) {
           serviceSelect.value = "ristrutturazione";
         }
-        window.location.href = "thank-you.html";
+        window.location.href = "/thank-you";
         return;
       } catch (err) {
         errorEl?.classList.add("is-visible");
